@@ -2,7 +2,7 @@
 Assets, code, and history for the Switch Pride Flag created by switches in Phoenix
 
 ## Background
-The Switch Pride Flag on this page was created by the switches in Arizona Power Exchange in Phoenix, AZ. From approximately June 26th 2025 to January 14th 2026, an estimated 50 switches helped iterate on the visual elements and their symbolism.
+The Switch Pride Flag on this page was created by the switches in Arizona Power Exchange in Phoenix, AZ. From June 2025 to January 14th 2026, an estimated 50 switches helped iterate on the visual elements and their symbolism.
 
 ## Meaning
 <img src="Switch%20Pride%20Flag-rb.png?raw=true" alt="Switch Pride Flag" width="300" height="auto">

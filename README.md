@@ -17,7 +17,8 @@ The Switch Pride Flag on this page was created by the switches in Arizona Power 
 <img src="Switch%20Pride%20Flag-rl.png?raw=true" alt="Switch Pride Flag" width="auto" height="300"> <img src="Switch%20Pride%20Flag-pl.png?raw=true" alt="Switch Pride Flag" width="auto" height="300">
 
 The flag may be displayed in any orientation; no presentation of the flag is to be considered "upside-down".
-<img src="Switch%20Pride%20Flag-rb.png?raw=true" alt="Switch Pride Flag" width="300" height="auto">
+
+<img src="Switch%20Pride%20Flag-rt.png?raw=true" alt="Switch Pride Flag" width="300" height="auto">
 
 ## Usage
 The flag is licensed under the CC0 license. It can be used freely without attribution

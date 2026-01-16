@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Switch Pride Flag SVG Generator</title>
+	<style>
+	* {
+		margin: 0;
+		box-sizing: border-box;
+	}
+
+	html {
+		width: 100%;
+		height: 100%;
+	}
+
+	svg rect {
+	  shape-rendering: crispEdges;
+	}
+
+	svg path {
+		shape-rendering: geometricPrecision;
+	}
+	</style>
+	<script>
+		const W = 500;
+		const H = 300;
+		const DPI=.5;
+
+		const makeSVG = (target=document.body, prepend=false) => {
+			const svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+			svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+			svg.innerHTML = `<clipPath id="crop-edges"><rect x="0" y="0" width="${W}" height="${H}" /></clipPath>`;
+			target.append(svg);
+			if (prepend)
+				target.prepend(svg);
+			const g = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+			svg.append(g);
+			return g;
+		}
+
+		const makeStripe = (g, y, h, fill) => {
+			const stripe = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+			stripe.setAttribute('x', 0);
+			stripe.setAttribute('y', y);
+			stripe.setAttribute('width', W);
+			stripe.setAttribute('height', h);
+			stripe.setAttribute('fill', fill);
+			g.append(stripe);
+			return stripe;
+		}
+
+		const makePath = (g, d, fill, strokeWidth=0) => {
+			const path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			path.setAttribute('d', d);
+			path.setAttribute('fill', fill);
+			path.setAttribute('stroke', 'black');
+			path.setAttribute('stroke-width', strokeWidth);
+			path.setAttribute('clip-path', `url(#crop-edges)`);
+			g.append(path);
+			return path;
+		}
+
+		const r = n => Math.round(n)
+		const getSinePoints = (x1, x2, A=H/3, f=Math.PI * 2 / W, C=0, phi=0) => {
+			const wave = (x) => H / 2 + A * Math.sin((x-phi) * f) + C;
+			const der = (x) => A * f * Math.cos((x-phi) * f);
+			const count = 20; // This number determines how many control points estimate the sine wave
+			return new Array(count+1).fill(0).map((_, i) => {
+				const x = x1 + i * (x2 - x1) / count;
+				const y = wave(x);
+				const dydx = der(x);
+				return {x, y, dydx};
+			});
+		};
+
+		const controlPoint = (p1, p2) => {
+			if (p1.dydx == null) {
+				return {
+				x: (p1.x + p2.x) / 2,
+				y: (p1.y + p2.y) / 2,
+				};
+			}
+			const b1 = p1.y - p1.dydx * p1.x;
+			const b2 = p2.y - p2.dydx * p2.x;
+			const x = (-b2 + b1) / (p2.dydx - p1.dydx);
+			const y = p2.dydx * x + b2;
+			return { x, y };
+		}
+
+		const createCurveFrom = (points) => {
+			const p0 = points[0];
+			return `${p0.x} ${p0.y} Q ${points.slice(1).map((p2, i) => {
+				const p1 = points[i];
+				const con = controlPoint(p1, p2);
+				return `${con.x} ${con.y} ${p2.x} ${p2.y}`;
+			})}`
+		}
+
+		const getCurve = (x1, x2, A=H/3) => createCurveFrom(getSinePoints(x1, x2, A));
+
+		const generateSwitchPrideFlag = ([b1, b2, t2, t3], target) => {
+			const g = makeSVG(target);
+			const sH = H / 4;
+			const S = Math.asin(.5) / (2 * Math.PI) * W;
+			
+			const shapes = [
+				makeStripe(g, sH * 0, H/4*4, b1),
+				makeStripe(g, sH * 1, H/4*3, b2),
+				makeStripe(g, sH * 2, H/4*2, t2),
+				makeStripe(g, sH * 3, H/4*1, t3),
+
+				makePath(g, `M
+				${getCurve(0, W/2, sH)}`,
+				'white'),
+
+				makePath(g, `M
+				${getCurve(W/2, W, sH)}`,
+				'black'),
+			];
+			return {
+				svg: g.parentElement,
+			}
+		}
+
+		function download(data, filename, type) {
+			var file = new Blob([data], {type: type});
+			if (window.navigator.msSaveOrOpenBlob) // IE10+
+				window.navigator.msSaveOrOpenBlob(file, filename);
+			else { // Others
+				var a = document.createElement("a"),
+						url = URL.createObjectURL(file);
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				setTimeout(function() {
+					document.body.removeChild(a);
+					window.URL.revokeObjectURL(url);  
+				}, 0); 
+			}
+		}
+
+		const main = () => {
+			const others = document.getElementById('others');
+			const { svg } = generateSwitchPrideFlag([
+				'#ce3a6d',
+				'#f58220',
+				'#005fa6',
+				'#8352a1'
+			], document.querySelector('figure div'));
+			svg.addEventListener('click', () => {
+				download(svg.outerHTML, 'switch-pride-flag.svg')
+			});
+		}
+
+		setTimeout(main, 1);
+	</script>
+</head>
+<body>
+	<figure>
+		<div style="width: 400px; resize: both; overflow: hidden; padding: 0 20px 20px 0"></div>
+		<figcaption>Left-click the SVG to download it</figcaption>
+	</figure>
+</body>
+</html>
